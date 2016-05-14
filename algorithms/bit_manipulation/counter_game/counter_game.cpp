@@ -19,7 +19,7 @@ using namespace std;
 // Given N, your task is to find the winner of the game.
 string game(uint64_t N) {
     bool louises_turn = false;
-    uint64_t pow2 = 9223372036854775808L; // 2^63
+    uint64_t pow2 = 9223372036854775808ULL; // 2^63
     while (N != 1) {
         louises_turn = !louises_turn;
         while (pow2 > N) {
