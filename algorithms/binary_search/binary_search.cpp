@@ -9,7 +9,7 @@ using namespace std;
 // begin is the first index
 // end is one past the end
 size_t find_closest(const vector<int>& arr, const int search,
-        const size_t begin, size_t end) {
+        const size_t begin, const size_t end) {
     // return sentinel value for empty arrays    
     if (arr.empty()) {
         return -1;
@@ -18,28 +18,21 @@ size_t find_closest(const vector<int>& arr, const int search,
     // base case found lower bound
     size_t length = end - begin;
     if (length == 1) {
-        int best = numeric_limits<int>::max();
-        size_t best_index = 0;
-        if (end != arr.size()) {
-            // it could be closer to the next past the end of the subarray
-            end++; 
-        }    
-        for (size_t i = begin; i < end; i++) {
-            int diff = abs(search - arr[i]);
-            if (diff < best) {
-                best_index = i;
-                best = diff;
+        if (end == arr.size()) {
+            return begin;
+        } else {
+            // it could be closer to the one above the lower bound 
+            if (abs(search - arr[begin]) < abs(search - arr[end])) {
+                return begin;
+            } else {
+                return end;
             }
-        }
-        return best_index;
+        }    
     }
 
     // split array in half and recurse 
     size_t middle = (begin + end) / 2;
-    if (arr[middle] == search) {
-        // exact match difference is 0
-        return middle;
-    } else if (search < arr[middle]) {
+    if (search < arr[middle]) {
         // recurse left
         return find_closest(arr, search, begin, middle);
     } else {
@@ -84,7 +77,8 @@ int main() {
         int search = rand();
         size_t index = find_closest(sorted, search); 
         size_t index_true = find_closest_linear_scan(sorted, search);
-        if (index != index_true && sorted[index] != sorted[index_true]) {
+        if (index != index_true && 
+            abs(search - sorted[index]) != abs(search - sorted[index_true])) {
             cout << endl << endl << "FAILED" << endl;
             cout << "size = " << sorted.size() << endl;
             cout << "search = " << search << endl;
