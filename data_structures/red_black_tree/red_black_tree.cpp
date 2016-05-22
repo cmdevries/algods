@@ -29,7 +29,7 @@ private:
     };
     
     struct search_t {
-        node_t* parent; // insertion point
+        node_t* insert; // insertion point or point where already inserted
         bool found; // was value already found in tree?
     };
 
@@ -50,7 +50,7 @@ private:
     void insert(node_t* node, const T& t) {
         auto search = find(nullptr, node, t);
         if (!search.found) {
-            node_t* parent = search.parent;
+            node_t* parent = search.insert;
             node_t* newnode = new node_t;
             newnode->t = t;
             newnode->color = RED;
