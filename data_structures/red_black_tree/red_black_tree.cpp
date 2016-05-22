@@ -76,7 +76,7 @@ private:
 int main() {
     set<int> a;
     rb_tree_t<int> b;
-    auto data = {1, 10, 2, 8, 3, 7, 4, 6, 5};
+    auto data = {5, 3, 4, 2, 1, 7, 6, 9, 8, 10};
     for (auto t : data) {
         a.insert(t);
         b.insert(t);
