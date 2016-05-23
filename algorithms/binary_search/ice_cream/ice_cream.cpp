@@ -1,8 +1,9 @@
 #include <cmath>
 #include <cstdio>
-#include <vector>
-#include <iostream>
+#include <ctime>
 #include <algorithm>
+#include <iostream>
+#include <vector>
 using namespace std;
 
 struct element {
@@ -14,29 +15,112 @@ struct element {
     }
 };
 
-size_t lower_bound(const vector<element>& flavors, const int search) {
-    if (flavors.empty()) {
-        return -1;
+template <typename T>
+size_t lower_bound(const vector<T>& arr, const T& search) {
+    if (arr.empty()) {
+        return arr.size();
     }
     
+    // binary search
     size_t begin = 0;
-    size_t end = flavors.size();
-    while (begin + 1 != end) {
+    size_t end = arr.size() - 1;
+    while (begin < end) {
         // (begin + end) / 2 can cause overflow
         size_t middle = begin + (end - begin) / 2;
-        if (search < flavors[middle].value) {
+        if (arr[middle] < search) {
+            // search right half
+            begin = middle + 1;
+        } else {
             // search left half
             end = middle;
-        } else {
-            // search right half
-            begin = middle;
         }
     }
     
+    // all values are less than search
+    if (arr[begin] < search) { 
+        return arr.size();
+    }
     return begin;
 }
 
+template <typename T>
+size_t linear_scan_lower_bound(const vector<T>& arr, const T& search) {
+    size_t i = 0;
+    for ( ; i < arr.size(); i++) {
+        if (!(arr[i] < search)) {
+            return i;
+        }    
+    }
+    return arr.size();
+}
+
+void test(vector<int>& arr, int search) {
+    size_t linear = linear_scan_lower_bound(arr, search);
+    size_t bsearch = lower_bound(arr, search);
+    auto it = std::lower_bound(arr.begin(), arr.end(), search);
+    size_t std = it - arr.begin();
+    if (linear != bsearch || std != bsearch) {
+        cout << "key = " << search << endl
+             << "linear = " << linear << endl
+             << "binary = " << bsearch << endl
+             << "lower_bound = " << std << endl;
+        if (arr.size() <= 100) {     
+            for (auto a : arr) {
+                cout << a << ' ';
+            }
+        }
+        cout << endl << endl;
+    }
+}
+
+void test_lower_bound() {
+    // fixed test cases
+    {
+        vector<int> arr = {};
+        for (int i = 0; i <= 7; i++) {
+            test(arr, i);
+        }
+    }
+    {
+        vector<int> arr = {2};
+        for (int i = 0; i <= 7; i++) {
+            test(arr, i);
+        }
+    }
+    {
+        vector<int> arr = {2, 5};
+        for (int i = 0; i <= 7; i++) {
+            test(arr, i);
+        }
+    }
+    {
+        vector<int> arr = {5, 10, 15, 20, 25, 30};
+        for (int i = 0; i <= 35; i++) {
+            test(arr, i);
+        }
+    }
+
+    // randomized test cases
+    srand(time(NULL));
+    {
+        const auto max = 10000;
+        vector<int> arr;
+        arr.reserve(max);
+        const auto tries = 1000 * 1000;
+        for (int t = 0; t < tries; t++) {
+            arr.clear();
+            auto currmax = rand() % max;
+            for (int i = 0; i < max; i++) {
+                arr.push_back(rand() % max);
+            }
+            sort(arr.begin(), arr.end());
+            test(arr, rand() % max);
+        }    
+    }
+}
+
 int main() {
+    if (false) { test_lower_bound(); return 0; }
     int T = 0;
     cin >> T;
     for (int t = 0; t < T; t++) {
@@ -56,7 +140,7 @@ int main() {
         sort(flavors.begin(), flavors.end());
         for (auto flavor : flavors) {
             int need = M - flavor.value;
-            size_t lbound = lower_bound(flavors, need);
+            size_t lbound = lower_bound(flavors, {need, 0});
             if (lbound != -1) {
                 auto& other_flavor = flavors[lbound];
                 if (other_flavor.value == need && flavor.index != other_flavor.index) {
