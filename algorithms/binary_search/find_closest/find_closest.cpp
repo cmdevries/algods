@@ -62,31 +62,62 @@ size_t find_closest_linear_scan(const vector<int>& arr, const int search) {
     return best_index;
 }
 
+void test(vector<int>& arr, const int search) {
+    sort(arr.begin(), arr.end());
+    size_t index = find_closest(arr, search); 
+    size_t index_true = find_closest_linear_scan(arr, search);
+    if (index != index_true && 
+        abs(search - arr[index]) != abs(search - arr[index_true])) {
+        cout << endl << endl << "FAILED" << endl;
+        cout << "size = " << arr.size() << endl;
+        cout << "search = " << search << endl;
+        cout << "binary search: index = " << index << " value = " << arr[index] << " diff = " << abs(search - arr[index]) << endl;
+        cout << "linear scan: index = " << index_true << " value = " << arr[index_true] << " diff = " << abs(search - arr[index_true]) << endl;
+    }            
+    cout << '.' << flush;
+}
+
 int main() {
+    // manual test cases
+    { // 0 size vector 
+        vector<int> arr;
+        if (find_closest(arr, 1) != -1) {
+            cout << "ERROR: zero size array not returning -1" << endl;
+        }
+    }
+    { // 1 size array
+        vector<int> arr = {5};
+        for (int i = 0; i <= 10; i++) {
+            test(arr, i);
+        }
+    }
+    { // 2 size array
+        vector<int> arr = {2, 5};
+        for (int i = 0; i <= 7; i++) {
+            test(arr, i);
+        }
+    }
+    { // many size array
+        vector<int> arr = {5, 10, 15, 20, 25, 30};
+        for (int i = 0; i <= 35; i++) {
+            test(arr, i);
+        }
+    }
+
+    // randomly generated
     constexpr int MAXSIZE = 1024*1024;
     constexpr int TRIALS = 10000;
-    vector<int> sorted;
-    sorted.reserve(MAXSIZE);
+    vector<int> arr;
+    arr.reserve(MAXSIZE);
     srand(time(NULL));
     for (int i = 0; i < TRIALS; i++) {
-        sorted.clear();
+        arr.clear();
         int size = 1 + (rand() % MAXSIZE);
         for (int j = 0; j < size; j++) {
-            sorted.push_back(rand());
+            arr.push_back(rand());
         }
-        sort(sorted.begin(), sorted.end());
         int search = rand();
-        size_t index = find_closest(sorted, search); 
-        size_t index_true = find_closest_linear_scan(sorted, search);
-        if (index != index_true && 
-            abs(search - sorted[index]) != abs(search - sorted[index_true])) {
-            cout << endl << endl << "FAILED" << endl;
-            cout << "size = " << sorted.size() << endl;
-            cout << "search = " << search << endl;
-            cout << "binary search: index = " << index << " value = " << sorted[index] << " diff = " << abs(search - sorted[index]) << endl;
-            cout << "linear scan: index = " << index_true << " value = " << sorted[index_true] << " diff = " << abs(search - sorted[index_true]) << endl;
-        }            
-        cout << '.' << flush;
+        test(arr, search);
     }
     cout << endl;
 }
