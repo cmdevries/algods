@@ -31,7 +31,8 @@ size_t find_closest(const vector<int>& arr, const int search,
     }
 
     // split array in half and recurse 
-    size_t middle = (begin + end) / 2;
+    // (begin + end) / 2 could overflow
+    size_t middle = begin + (end - begin) / 2; 
     if (search < arr[middle]) {
         // recurse left
         return find_closest(arr, search, begin, middle);
