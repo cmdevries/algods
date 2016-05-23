@@ -26,7 +26,8 @@ void split_merge(vector<int>& array, size_t begin, size_t end, vector<int>& work
     }
 
     // split array in half
-    size_t middle = (end + begin) / 2; 
+    // (begin + end) / 2 can result in overflow
+    size_t middle = begin + (end - begin) / 2; 
 
     // split and merge left
     split_merge(array, begin, middle, work);
